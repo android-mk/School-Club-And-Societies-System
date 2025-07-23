@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to Victory School Club System</h1>
+<a href="{{ url_for('register_student_route') }}" class="btn btn-primary">Register Student</a>
+<a href="{{ url_for('dashboard') }}" class="btn btn-secondary">View Dashboard</a>
+{% endblock %}

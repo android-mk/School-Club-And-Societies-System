@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block header %}{{ club.name }} Details{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex flex-wrap gap-3">
+    <a href="{{ url_for('join_club') }}?club_id={{ club.club_id }}" class="btn btn-primary">
+        <i class="fas fa-user-plus mr-2"></i> Join This Club
+    </a>
+    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#assignLeadershipModal">
+        <i class="fas fa-users-cog mr-2"></i> Assign Leadership
+    </button>
+    <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#addPatronModal">
+        <i class="fas fa-chalkboard-teacher mr-2"></i> 
+        {% if club.patron_id %}Change Patron{% else %}Add Patron{% endif %}
+    </button>
+    <a href="{{ url_for('club_activities', club_id=club.club_id) }}" class="btn btn-outline-light">
+        <i class="fas fa-calendar-alt mr-2"></i> Club Activities
+    </a>
+</div>
+
+<!-- Club Leadership -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-4">Club Leadership</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Patron</td>
+                        <td>
+                            {% if club.patron_name %}
+                                {{ club.patron_name }} <small class="text-muted">({{ club.patron_email }})</small>
+                            {% else %}
+                                <span class="text-muted">No patron assigned</span>
+                            {% endif %}
+                        </td>
+                        <td>-</td>
+                    </tr>
+                    {% for role in ['Chairperson', 'Vice Chairperson', 'Secretary', 'Treasurer'] %}
+                        {% set leader = club.members|selectattr('role', 'equalto', role)|first %}
+                        <tr>
+                            <td>{{ role }}</td>
+                            <td>
+                                {% if leader %}
+                                    <a href="{{ url_for('student_details', student_id=leader.student_id) }}" class="text-primary">
+                                        {{ leader.name }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">Vacant</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ leader.class if leader else '-' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Members -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-4">All Members ({{ club.members|length }})</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in club.members %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('student_details', student_id=member.student_id) }}" class="text-primary">
+                                {{ member.name }}
+                            </a>
+                        </td>
+                        <td>{{ member.class }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if member.role == 'Member' %}bg-secondary
+                                {% else %}bg-primary{% endif %}">
+                                {{ member.role }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Finances -->
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title mb-4">Financial Summary</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Transaction Type</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for finance in finances %}
+                    <tr>
+                        <td>{{ finance.transaction_type }}</td>
+                        <td>KES {{ finance.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Leadership Assignment Modal -->
+<div class="modal fade" id="assignLeadershipModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Assign Leadership Roles</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('assign_leadership') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="club_id" value="{{ club.club_id }}">
+                    
+                    {% for role in ['Chairperson', 'Vice Chairperson', 'Secretary', 'Treasurer'] %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ role }}</label>
+                            <select name="{{ role|lower|replace(' ', '_') }}" class="form-select">
+                                <option value="">-- Select Member --</option>
+                                {% for member in club.members %}
+                                    <option value="{{ member.student_id }}"
+                                        {% if member.role == role %}selected{% endif %}>
+                                        {{ member.name }} ({{ member.class }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Patron Modal -->
+<div class="modal fade" id="addPatronModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">{% if club.patron_id %}Change{% else %}Add{% endif %} Patron</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('assign_patron') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="club_id" value="{{ club.club_id }}">
+                    <div class="mb-3">
+                        <label class="form-label">Select Patron</label>
+                        <select name="patron_id" class="form-select" required>
+                            <option value="">-- Select Patron --</option>
+                            {% for patron in all_patrons %}
+                                <option value="{{ patron.patron_id }}"
+                                    {% if club.patron_id == patron.patron_id %}selected{% endif %}>
+                                    {{ patron.name }} ({{ patron.email }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+{% endblock %}
+{% endblock %}

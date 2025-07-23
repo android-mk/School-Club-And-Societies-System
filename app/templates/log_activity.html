@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block header %}Log Club Activity{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Record New Activity</h5>
+                
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Club</label>
+                        {{ form.club_id(class="form-select") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Activity Name</label>
+                        {{ form.activity_name(class="form-control", placeholder="e.g. Annual Debate Competition") }}
+                    </div>
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Activity Date</label>
+                            {{ form.activity_date(class="form-control", type="date") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Revenue Generated (KES)</label>
+                            {{ form.revenue(class="form-control", placeholder="0.00") }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Log Activity
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block header %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-12 mb-4">
+        <div class="card p-4">
+            <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
+                <span>Quick Actions</span>
+            </h5>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{{ url_for('register_student_route') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus mr-2"></i>Register Student
+                </a>
+                <a href="{{ url_for('all_patrons') }}" class="btn btn-outline-light">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>All Patrons
+                </a>
+                <a href="{{ url_for('all_leaders') }}" class="btn btn-outline-light">
+                    <i class="fas fa-users-cog mr-2"></i>All Leaders
+                </a>
+                <a href="{{ url_for('all_students') }}" class="btn btn-outline-light">
+                    <i class="fas fa-users mr-2"></i>All Students
+                </a>
+                <a href="{{ url_for('all_activities') }}" class="btn btn-outline-light">
+                    <i class="fas fa-calendar-alt mr-2"></i>Activities
+                </a>
+                <a href="{{ url_for('financial_summary') }}" class="btn btn-outline-light">
+                    <i class="fas fa-chart-pie mr-2"></i>Financial Summary
+                </a>
+                <a href="{{ url_for('manage_clubs') }}" class="btn btn-outline-light">
+                    <i class="fas fa-chess-knight mr-2"></i>Manage Clubs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clubs Summary -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title d-flex justify-content-between align-items-center">
+                    <span>Clubs Summary</span>
+                    <a href="{{ url_for('manage_clubs') }}" class="btn btn-sm btn-outline-light">View All</a>
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Club Name</th>
+                                <th>Members</th>
+                                <th>Revenue</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for club in clubs %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('club_details', club_id=club.club_id) }}" class="text-primary">
+                                        {{ club.name }}
+                                    </a>
+                                </td>
+                                <td>{{ club.member_count }}</td>
+                                <td>KES {{ club.total_fees }}</td>
+                                <td>
+                                    <a href="{{ url_for('club_details', club_id=club.club_id) }}" 
+                                       class="btn btn-sm btn-outline-light">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities and Pending Approvals -->
+    <div class="col-lg-6">
+        <div class="row">
+            <!-- Recent Activities -->
+            <div class="col-12 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title d-flex justify-content-between align-items-center">
+                            <span>Recent Activities</span>
+                            <a href="{{ url_for('log_activity') }}" class="btn btn-sm btn-outline-light">
+                                <i class="fas fa-plus mr-1"></i>Add New
+                            </a>
+                        </h5>
+                        <div class="list-group list-group-flush">
+                            {% for activity in activities %}
+                            <div class="list-group-item bg-transparent border-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ activity.name }}</h6>
+                                        <small class="text-muted">{{ activity.club_name }}</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">
+                                        KES {{ activity.revenue_generated }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Approvals -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Approvals</h5>
+                        {% if pending_approvals %}
+                        <div class="list-group list-group-flush">
+                            {% for req in pending_approvals %}
+                            <div class="list-group-item bg-transparent border-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ req.student_name }}</h6>
+                                        <small class="text-muted">Wants to exit {{ req.club_name }}</small>
+                                    </div>
+                                    <a href="{{ url_for('exit_request', membership_id=req.membership_id) }}" 
+                                       class="btn btn-sm btn-warning">
+                                        <i class="fas fa-clipboard-check mr-1"></i>Review
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info mb-0">
+                            No pending approvals
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- In dashboard.html, replace the Financial Summary section with: -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Financial Allocation Summary</h5>
+                <canvas id="financeChart" height="100"></canvas>
+                {% if totals %}
+                <div class="mt-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card bg-dark border-success">
+                                <div class="card-body text-center">
+                                    <h6>Total Revenue</h6>
+                                    <h3 class="text-success">KES {{ totals.grand_total }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-dark border-primary">
+                                <div class="card-body text-center">
+                                    <h6>Total Fees</h6>
+                                    <h3 class="text-primary">KES {{ totals.total_fees }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-dark border-warning">
+                                <div class="card-body text-center">
+                                    <h6>Total Allocations</h6>
+                                    <h3 class="text-warning">KES {{ totals.total_allocations }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-dark border-info">
+                                <div class="card-body text-center">
+                                    <h6>School Contribution</h6>
+                                    <h3 class="text-info">KES {{ totals.total_school_contrib }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Activities', 'Party Fund', 'Savings', 'School Contribution'],
+                datasets: [{
+                    data: [
+                        {{ allocations.get('activities', 0) }},
+                        {{ allocations.get('party', 0) }},
+                        {{ allocations.get('savings', 0) }},
+                        {{ allocations.get('school_contribution', 0) }}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}-->
+{% endblock %}

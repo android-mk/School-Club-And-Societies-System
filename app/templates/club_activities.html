@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ club['name'] }} Activities</h2>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <a href="{{ url_for('log_activity') }}?club_id={{ club['club_id'] }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Log New Activity
+        </a>
+        <a href="{{ url_for('club_details', club_id=club['club_id']) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Club Details
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Upcoming Activities -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-calendar-plus"></i> Upcoming Activities
+            </div>
+            <div class="card-body">
+                {% if upcoming_activities %}
+                <div class="list-group">
+                    {% for activity in upcoming_activities %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ activity['name'] }}</h5>
+                            <small>{{ activity['activity_date'] }}</small>
+                        </div>
+                        <p class="mb-1">Expected Revenue: KES {{ activity['revenue_generated'] }}</p>
+                        <div class="btn-group mt-2">
+                            <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="#" class="btn btn-sm btn-outline-danger">Cancel</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No upcoming activities scheduled.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Past Activities -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-history"></i> Past Activities
+            </div>
+            <div class="card-body">
+                {% if past_activities %}
+                <div class="list-group">
+                    {% for activity in past_activities %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ activity['name'] }}</h5>
+                            <small>{{ activity['activity_date'] }}</small>
+                        </div>
+                        <p class="mb-1">
+                            Revenue Generated: KES {{ activity['revenue_generated'] }}<br>
+                            <small class="text-muted">
+                                Allocated: 
+                                KES {{ activity['revenue_generated'] * 0.5 }} (Activities), 
+                                KES {{ activity['revenue_generated'] * 0.3 }} (Party), 
+                                KES {{ activity['revenue_generated'] * 0.2 }} (Savings)
+                            </small>
+                        </p>
+                        <div class="btn-group mt-2">
+                            <a href="#" class="btn btn-sm btn-outline-secondary">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No past activities recorded.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                Financial Summary
+            </div>
+            <div class="card-body">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!--
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for activity in past_activities %}
+                    '{{ activity['name'] }} ({{ activity['activity_date'] }})',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Revenue Generated (KES)',
+                    data: [
+                        {% for activity in past_activities %}
+                        {{ activity['revenue_generated'] }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+-->

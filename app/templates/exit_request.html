@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Exit Request for {{ membership.student.name }}</h2>
+<p>Club: {{ membership.club.name }} ({{ membership.role }})</p>
+
+{% if membership.role == 'Member' %}
+    <div class="alert alert-info">
+        Regular members can exit clubs immediately
+    </div>
+{% else %}
+    <div class="alert alert-warning">
+        Leaders require patron approval to exit clubs
+    </div>
+    
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.approval_notes.label }}
+            {{ form.approval_notes(class="form-control") }}
+        </div>
+        
+        <div class="form-group form-check">
+            {{ form.approved(class="form-check-input") }}
+            {{ form.approved.label(class="form-check-label") }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Submit Decision</button>
+    </form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Manage Clubs</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Club Name</th>
+            <th>Members</th>
+            <th>Total Fees</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for club in clubs %}
+        <tr>
+            <td>{{ club.name }}</td>
+            <td>{{ club.member_count }}</td>
+            <td>KES {{ club.total_fees }}</td>
+            <td>
+                <a href="{{ url_for('club_details', club_id=club.club_id) }}" class="btn btn-sm btn-info">Details</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

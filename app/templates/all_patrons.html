@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block header %}All Patrons{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="card-title mb-0">Club Patrons</h5>
+            <a href="{{ url_for('add_patron') }}" class="btn btn-primary">
+                <i class="fas fa-plus mr-2"></i> Add New Patron
+            </a>
+        </div>
+        
+        {% if patrons %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Clubs</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patron in patrons %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 36px; height: 36px;">
+                                    {{ patron.name[0] }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ patron.name }}</h6>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ patron.email }}</td>
+                        <td>
+                            {% set patron_clubs = [] %}
+                            {% for club in clubs %}
+                                {% if club.patron_id == patron.patron_id %}
+                                    {% if patron_clubs.append(club.name) %}{% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ patron_clubs|join(', ') if patron_clubs else 'None' }}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-sm btn-outline-light">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No patrons found. Add your first patron to get started.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

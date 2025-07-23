@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block header %}Financial Summary{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Financial Overview -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Financial Overview</h5>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Club Financial Details -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Club Financial Details</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Club Name</th>
+                                <th>Total Revenue</th>
+                                <th>Registration Fees</th>
+                                <th>Allocations</th>
+                                <th>School Contribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for club in club_finances %}
+                            <tr>
+                                <td>{{ club.club_name }}</td>
+                                <td>KES {{ club.total }}</td>
+                                <td>KES {{ club.fees }}</td>
+                                <td>KES {{ club.allocations }}</td>
+                                <td>KES {{ club.school_contrib }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grand Totals -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Grand Totals</h5>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-dark border-success">
+                            <div class="card-body text-center">
+                                <h6>Total Revenue</h6>
+                                <h3 class="text-success">KES {{ totals.grand_total }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-dark border-primary">
+                            <div class="card-body text-center">
+                                <h6>Total Fees</h6>
+                                <h3 class="text-primary">KES {{ totals.total_fees }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-dark border-warning">
+                            <div class="card-body text-center">
+                                <h6>Total Allocations</h6>
+                                <h3 class="text-warning">KES {{ totals.total_allocations }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-dark border-info">
+                            <div class="card-body text-center">
+                                <h6>School Contribution</h6>
+                                <h3 class="text-info">KES {{ totals.total_school_contrib }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Activities', 'Party Fund', 'Savings', 'School Contribution'],
+                datasets: [{
+                    label: 'KES',
+                    data: [
+                        {{ allocations.get('activities', 0) }},
+                        {{ allocations.get('party', 0) }},
+                        {{ allocations.get('savings', 0) }},
+                        {{ allocations.get('school_contribution', 0) }}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#f8fafc'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+-->
+{% endblock %}
+{% endblock %}

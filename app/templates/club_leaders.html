@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block header %}Club Leaders{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title mb-4">Current Club Leadership</h5>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Club</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leader in leaders %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    {{ leader.student_name[0] }}
+                                </div>
+                                <span>{{ leader.student_name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ leader.class }}</td>
+                        <td>
+                            <span class="badge bg-dark border border-light">{{ leader.club_name }}</span>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if leader.role == 'Chairperson' %}bg-primary
+                                {% elif leader.role == 'Vice Chairperson' %}bg-info
+                                {% else %}bg-secondary{% endif %}">
+                                {{ leader.role }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('student_details', student_id=leader.student_id) }}" 
+                               class="btn btn-sm btn-outline-light">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

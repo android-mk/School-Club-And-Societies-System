@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block header %}Register Student{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Student Registration</h5>
+                
+                <form method="POST" action="{{ url_for('register_student_route') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Admission Number</label>
+                            {{ form.admission_no(class="form-control", placeholder="e.g. V2023001") }}
+                            {% for error in form.admission_no.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name</label>
+                            {{ form.name(class="form-control", placeholder="Student full name") }}
+                            {% for error in form.name.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Class</label>
+                            {{ form.class_(class="form-control", placeholder="e.g. 3E") }}
+                            {% for error in form.class_.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Primary Club</label>
+                            {{ form.club_id(class="form-select") }}
+                            {% for error in form.club_id.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Initial Role</label>
+                        {{ form.role(class="form-select") }}
+                        {% for error in form.role.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus mr-2"></i> Register Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
